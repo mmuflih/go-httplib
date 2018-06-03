@@ -10,28 +10,25 @@ package httplib
 import (
 	"encoding/json"
 	"net/http"
-	"runtime"
-	"strconv"
 )
 
 func ResponseRequestException(w http.ResponseWriter, err []error, code int) {
-	exceptions := []ErrorResponse{}
+	messages := ""
 	for _, e := range err {
-		_, fn, line, _ := runtime.Caller(1)
-		exception := ErrorResponse{
-			e.Error() + " on " + fn + ":" + strconv.Itoa(line),
-			code,
-			"Contact developer or administrator",
-			code,
-			e.Error(),
-		}
-		exceptions = append(exceptions, exception)
+		messages += e.Error()
+	}
+	exception := ErrorResponse{
+		messages,
+		code,
+		"Contact developer or administrator",
+		code,
+		messages,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
 	json.NewEncoder(w).Encode(
-		exceptions,
+		exception,
 	)
 	return
 }
