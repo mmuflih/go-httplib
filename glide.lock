@@ -1,5 +1,5 @@
-hash: aa8f9af897d0ecac9c50eb2fe0a6378029796dad9a2cfff1583c6099e2def7bd
-updated: 2018-06-01T18:27:18.094602436+07:00
+hash: 708e22c6bdcb1c11d15cde9407388dd27a9fa5bcc79aaa0979b095dd6dafd8da
+updated: 2018-06-03T11:39:29.391026412+07:00
 imports:
 - name: github.com/auth0/go-jwt-middleware
   version: 5493cabe49f7bfa6e2ec444a09d334d90cd4e2bd
@@ -9,9 +9,4 @@ imports:
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: e3702bed27f0d39777b0b37b664b6280e8ef8fbf
-- name: github.com/KulinaID/kulina-api-core
-  version: dce3cac4b7e0098cbb02fcb00349be7b69dbb5ba
-  subpackages:
-  - model
-  - model/httpmodel
 testImports: []

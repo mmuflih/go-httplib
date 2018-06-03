@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/KulinaID/kulina-api-core/model/httpmodel"
-
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -66,15 +64,9 @@ func checkJWT(w http.ResponseWriter, r *http.Request) error {
 
 	token, err := jwtMiddleware.Options.Extractor(r)
 	if err != nil {
-		errorRes := &httpmodel.ErrorResponse{
-			"400",
-			"invalid request: " + err.Error(),
-			"invalid request: " + err.Error(),
-			"400",
-			"https://kulina.id",
-		}
-		ResponseError(w, errorRes)
-		return err
+		eExtractor := errors.New("400")
+		ResponseException(w, eExtractor, 400)
+		return eExtractor
 	}
 
 	if token == "" {
@@ -83,59 +75,31 @@ func checkJWT(w http.ResponseWriter, r *http.Request) error {
 			return nil
 		}
 
-		errorMsg := "Required authorization token not found"
-		errorRes := &httpmodel.ErrorResponse{
-			"400",
-			"invalid request: " + errorMsg,
-			"invalid request: " + errorMsg,
-			"400",
-			"https://kulina.id",
-		}
-		ResponseError(w, errorRes)
-		return fmt.Errorf(errorMsg)
+		eReqiredToken := errors.New("Required authorization token not found")
+		ResponseException(w, eReqiredToken, 401)
+		return eReqiredToken
 	}
 
 	parsedToken, err := jwt.Parse(token, jwtMiddleware.Options.ValidationKeyGetter)
 	if err != nil {
-
-		errorMsg := "Error parsing token: " + err.Error()
-		errorRes := &httpmodel.ErrorResponse{
-			"400",
-			"invalid request: " + errorMsg,
-			"invalid request: " + errorMsg,
-			"400",
-			"https://kulina.id",
-		}
-		ResponseError(w, errorRes)
-		return fmt.Errorf("Error parsing token: %v", err)
+		ePassingToken := errors.New("Error parsing token: " + err.Error())
+		ResponseException(w, ePassingToken, 401)
+		return ePassingToken
 	}
 
 	if jwtMiddleware.Options.SigningMethod != nil && jwtMiddleware.Options.SigningMethod.Alg() != parsedToken.Header["alg"] {
 		errorMsg := fmt.Sprintf("Expected %s signing method but token specified %s",
 			jwtMiddleware.Options.SigningMethod.Alg(),
 			parsedToken.Header["alg"])
-		errorRes := &httpmodel.ErrorResponse{
-			"400",
-			"invalid request: " + errorMsg,
-			"invalid request: " + errorMsg,
-			"400",
-			"https://kulina.id",
-		}
-		ResponseError(w, errorRes)
-		return fmt.Errorf("Error validating token algorithm: %s", errorMsg)
+		eTokenSpecified := errors.New(errorMsg)
+		ResponseException(w, eTokenSpecified, 401)
+		return eTokenSpecified
 	}
 
 	if !parsedToken.Valid {
-		errorMsg := "Token is invalid"
-		errorRes := &httpmodel.ErrorResponse{
-			"400",
-			"invalid request: " + errorMsg,
-			"invalid request: " + errorMsg,
-			"400",
-			"https://kulina.id",
-		}
-		ResponseError(w, errorRes)
-		return errors.New("Token is invalid")
+		eInvalidToken := errors.New("Token is invalid")
+		ResponseException(w, eInvalidToken, 401)
+		return eInvalidToken
 	}
 
 	newRequest := r.WithContext(context.WithValue(r.Context(), jwtMiddleware.Options.UserProperty, parsedToken))
