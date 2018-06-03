@@ -15,8 +15,9 @@ import (
 func ResponseRequestException(w http.ResponseWriter, err []error, code int) {
 	messages := ""
 	for _, e := range err {
-		messages += e.Error()
+		messages += e.Error() + ","
 	}
+	messages = messages[:len(messages)-1]
 	exception := ErrorResponse{
 		messages,
 		code,
