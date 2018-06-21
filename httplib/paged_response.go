@@ -5,25 +5,26 @@ import (
 	"net/http"
 )
 
-type PagedResponse struct {
-	Data interface{} `json:"data"`
-	Page int         `json:"page"`
-	Size int         `json:"size"`
-	Code int         `json:"code"`
+type DataPaginator struct {
+	Data  interface{} `json:"items"`
+	Count int         `json:"total"`
+	Page  int         `json:"page"`
+	Size  int         `json:"size"`
 }
 
-func ResponsePaged(w http.ResponseWriter, page int, size int, data interface{}) {
-	exception := PagedResponse{
+type pageResponse struct {
+	data DataPaginator `json:"data"`
+	code int           `json:"code"`
+}
+
+func ResponsePaged(w http.ResponseWriter, data DataPaginator) {
+	resp := pageResponse{
 		data,
-		page,
-		size,
 		http.StatusOK,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	json.NewEncoder(w).Encode(
-		exception,
-	)
+	json.NewEncoder(w).Encode(resp)
 	return
 }
