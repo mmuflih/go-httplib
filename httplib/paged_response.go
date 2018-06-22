@@ -13,8 +13,8 @@ type DataPaginator struct {
 }
 
 type pageResponse struct {
-	data DataPaginator `json:"data"`
-	code int           `json:"code"`
+	Data DataPaginator `json:"data"`
+	Code int           `json:"code"`
 }
 
 func ResponsePaged(w http.ResponseWriter, data DataPaginator) {
