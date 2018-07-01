@@ -21,7 +21,7 @@ func InitJWTMiddleware(secret []byte) {
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return signingKey, nil
 		},
-		SigningMethod: jwt.SigningMethodHS256,
+		SigningMethod: jwt.SigningMethodHS512,
 	})
 }
 
