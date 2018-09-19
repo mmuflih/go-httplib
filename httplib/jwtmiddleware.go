@@ -25,6 +25,16 @@ func InitJWTMiddleware(secret []byte) {
 	})
 }
 
+func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningMethod) {
+	signingKey = secret
+	jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return signingKey, nil
+		},
+		SigningMethod: signingMethod,
+	})
+}
+
 func ExtractClaim(r *http.Request, key string) (interface{}, error) {
 	tokenStr, err := jwtMiddleware.Options.Extractor(r)
 	if err != nil {
