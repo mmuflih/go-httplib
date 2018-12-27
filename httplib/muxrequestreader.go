@@ -21,3 +21,8 @@ func (rr *muxRequestReader) GetJsonData(r *http.Request, data interface{}) (err 
 	err = json.NewDecoder(r.Body).Decode(data)
 	return
 }
+
+func (rr *muxRequestReader) GetQuery(r *http.Request, key string) string {
+	qs := r.URL.Query()
+	return qs.Get(key)
+}
