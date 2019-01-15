@@ -2,7 +2,9 @@ package httplib
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -15,6 +17,15 @@ func NewMuxRequestReader() RequestReader {
 
 func (rr *muxRequestReader) GetRouteParam(r *http.Request, name string) string {
 	return mux.Vars(r)[name]
+}
+
+func (rr *muxRequestReader) GetRouteParamInt(r *http.Request, name string) int {
+	i, err := strconv.Atoi(mux.Vars(r)[name])
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+	return i
 }
 
 func (rr *muxRequestReader) GetJsonData(r *http.Request, data interface{}) (err error) {
