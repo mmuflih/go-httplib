@@ -37,3 +37,13 @@ func (rr *muxRequestReader) GetQuery(r *http.Request, key string) string {
 	qs := r.URL.Query()
 	return qs.Get(key)
 }
+
+func (rr *muxRequestReader) GetQueryInt(r *http.Request, key string) int {
+	qs := r.URL.Query()
+	qi, err := strconv.Atoi(qs.Get(key))
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+	return qi
+}
