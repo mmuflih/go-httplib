@@ -7,28 +7,29 @@ import (
 
 type DataPaginate struct {
 	Data  interface{} 		`json:"data"`
+	Additional interface{}  `json:"additional,omitempty"`
 	Count int         		`json:"total"`
 	Page  int         		`json:"page"`
 	Size  int         		`json:"size"`
 	Code  int         		`json:"code"`
-	Additional interface{}  `json:"additional,omitempty"`
 }
 
-func NewDataPaged(data interface{}, count int, page int, size int) *DataPaginate {
-	return &DataPaginate {
+func NewDataPaginate(data interface{}, count int, page int, size int) DataPaginate {
+	dp := DataPaginate {
 		data,
+		nil,
 		count,
 		page,
 		size,
 		http.StatusOK,
-		data,
 	}
+	dp.Code = http.StatusOK
+	return dp
 }
 
-func ResponsePaginate(w http.ResponseWriter, data DataPaginate) {
+func ResponsePaginate(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	data.Code = http.StatusOK
 	json.NewEncoder(w).Encode(data)
 	return
 }
