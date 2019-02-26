@@ -27,6 +27,19 @@ func NewDataPaginate(data interface{}, count int, page int, size int) DataPagina
 	return dp
 }
 
+func NewNilDataPaginate() DataPaginate {
+	dp := DataPaginate {
+		"",
+		nil,
+		0,
+		0,
+		0,
+		http.StatusInternalServerError,
+	}
+	dp.Code = http.StatusOK
+	return dp
+}
+
 func ResponsePaginate(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
