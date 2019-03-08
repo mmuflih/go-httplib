@@ -6,18 +6,19 @@ import (
 	"fmt"
 	"net/http"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	jwtMid "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
 type httpfunc func(http.ResponseWriter, *http.Request)
 
-var jwtMiddleware *jwtmiddleware.JWTMiddleware
+var jwtMiddleware *jwtMid.JWTMiddleware
 var signingKey []byte
+var myrole map[string][]string
 
 func InitJWTMiddleware(secret []byte) {
 	signingKey = secret
-	jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+	jwtMiddleware = jwtMid.New(jwtMid.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return signingKey, nil
 		},
@@ -27,7 +28,18 @@ func InitJWTMiddleware(secret []byte) {
 
 func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningMethod) {
 	signingKey = secret
-	jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+	jwtMiddleware = jwtMid.New(jwtMid.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return signingKey, nil
+		},
+		SigningMethod: signingMethod,
+	})
+}
+
+func InitJWTMiddlewareWithRole(secret []byte, signingMethod jwt.SigningMethod, role map[string][]string) {
+	signingKey = secret
+	myrole = role
+	jwtMiddleware = jwtMid.New(jwtMid.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return signingKey, nil
 		},
@@ -56,7 +68,7 @@ func ExtractClaim(r *http.Request, key string) (interface{}, error) {
 
 func JWTMid(h httpfunc) httpfunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := checkJWT(w, r)
+		err := checkJWT(w, r, "")
 		if err != nil {
 			return
 		}
@@ -64,7 +76,17 @@ func JWTMid(h httpfunc) httpfunc {
 	}
 }
 
-func checkJWT(w http.ResponseWriter, r *http.Request) error {
+func JWTMidWithRole(h httpfunc, role string) httpfunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := checkJWT(w, r, role)
+		if err != nil {
+			return
+		}
+		h(w, r)
+	}
+}
+
+func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 
 	if !jwtMiddleware.Options.EnableAuthOnOptions {
 		if r.Method == "OPTIONS" {
@@ -96,6 +118,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request) error {
 		ResponseException(w, ePassingToken, 401)
 		return ePassingToken
 	}
+	fmt.Println(parsedToken.Claims, "token")
 
 	if jwtMiddleware.Options.SigningMethod != nil && jwtMiddleware.Options.SigningMethod.Alg() != parsedToken.Header["alg"] {
 		errorMsg := fmt.Sprintf("Expected %s signing method but token specified %s",
@@ -114,5 +137,24 @@ func checkJWT(w http.ResponseWriter, r *http.Request) error {
 
 	newRequest := r.WithContext(context.WithValue(r.Context(), jwtMiddleware.Options.UserProperty, parsedToken))
 	*r = *newRequest
-	return nil
+
+	/** check role */
+	if role == "" {
+		return nil
+	}
+	tokenRole, _ := ExtractClaim(r, "role")
+	fmt.Println(tokenRole, "role")
+	for k, r := range myrole {
+		if k == role {
+			for _, c := range r {
+				if c == tokenRole {
+					return nil
+				}
+			}
+			break
+		}
+	}
+	e := errors.New("Access is not permitted")
+	ResponseException(w, e, 401)
+	return e
 }
