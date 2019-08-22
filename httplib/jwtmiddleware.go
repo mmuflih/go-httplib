@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	jwtMid "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -147,7 +148,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 	for k, r := range myrole {
 		if k == role {
 			for _, c := range r {
-				if c == tokenRole {
+				if strings.ToLower(c) == strings.ToLower(tokenRole.(string)) {
 					return nil
 				}
 			}
