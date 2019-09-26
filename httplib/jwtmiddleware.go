@@ -24,7 +24,7 @@ func InitJWTMiddleware(secret []byte) {
 }
 
 func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningMethod) {
-	writeLog = datalog.New("jwt-mid.log")
+	writeLog = datalog.New("jwt-mid.log", true)
 	signingKey = secret
 	jwtMiddleware = jwtMid.New(jwtMid.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
