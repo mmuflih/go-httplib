@@ -1,12 +1,12 @@
-hash: 708e22c6bdcb1c11d15cde9407388dd27a9fa5bcc79aaa0979b095dd6dafd8da
-updated: 2018-06-03T11:39:29.391026412+07:00
+hash: 95acfd088dbaaa703765e474a12a8c673211aee5befdb0e50dd0f53aa2f4d5bd
+updated: 2019-09-26T16:44:40.961214+07:00
 imports:
 - name: github.com/auth0/go-jwt-middleware
   version: 5493cabe49f7bfa6e2ec444a09d334d90cd4e2bd
 - name: github.com/dgrijalva/jwt-go
   version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
-- name: github.com/gorilla/context
-  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: e3702bed27f0d39777b0b37b664b6280e8ef8fbf
+  version: 00bdffe0f3c77e27d2cf6f5c70232a2d3e4d9c15
+- name: github.com/mmuflih/go-text-log
+  version: 201ac8254efd18efebfef7bd17c4695652b00c47
 testImports: []

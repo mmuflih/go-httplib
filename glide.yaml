@@ -5,3 +5,4 @@ import:
   version: ^3.2.0
 - package: github.com/gorilla/mux
   version: ^1.6.2
+- package: github.com/mmuflih/go-text-log

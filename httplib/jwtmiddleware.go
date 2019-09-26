@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	datalog "github.com/mmuflih/go-text-log"
 	"net/http"
 	"strings"
 
@@ -16,18 +17,14 @@ type httpFunc func(http.ResponseWriter, *http.Request)
 var jwtMiddleware *jwtMid.JWTMiddleware
 var signingKey []byte
 var myRole map[string][]string
+var writeLog datalog.DataLog
 
 func InitJWTMiddleware(secret []byte) {
-	signingKey = secret
-	jwtMiddleware = jwtMid.New(jwtMid.Options{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return signingKey, nil
-		},
-		SigningMethod: jwt.SigningMethodHS512,
-	})
+	InitJWTMiddlewareCustomSigningKey(secret, jwt.SigningMethodES512)
 }
 
 func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningMethod) {
+	writeLog = datalog.New("jwt-mid.log")
 	signingKey = secret
 	jwtMiddleware = jwtMid.New(jwtMid.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
@@ -40,12 +37,7 @@ func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningM
 func InitJWTMiddlewareWithRole(secret []byte, signingMethod jwt.SigningMethod, role map[string][]string) {
 	signingKey = secret
 	myRole = role
-	jwtMiddleware = jwtMid.New(jwtMid.Options{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return signingKey, nil
-		},
-		SigningMethod: signingMethod,
-	})
+	InitJWTMiddlewareCustomSigningKey(secret, signingMethod)
 }
 
 func ExtractClaim(r *http.Request, key string) (interface{}, error) {
@@ -154,6 +146,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		}
 	}
 	e := errors.New("Access is not permitted")
+	writeLog.Write(e, "my-role", myRole, "role", role, "token-role", tokenRole)
 	ResponseException(w, e, 401)
 	return e
 }
