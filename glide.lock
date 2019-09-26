@@ -1,5 +1,5 @@
 hash: 95acfd088dbaaa703765e474a12a8c673211aee5befdb0e50dd0f53aa2f4d5bd
-updated: 2019-09-26T17:25:26.791731+07:00
+updated: 2019-09-26T17:30:36.832633+07:00
 imports:
 - name: github.com/auth0/go-jwt-middleware
   version: 5493cabe49f7bfa6e2ec444a09d334d90cd4e2bd
@@ -10,5 +10,5 @@ imports:
 - name: github.com/mmuflih/datelib
   version: b9f338a20328b1554d19fd49b4432c96e7edb45b
 - name: github.com/mmuflih/go-text-log
-  version: 6674d98f5fe3088738b85b17fb86e90b5525a2ec
+  version: 4f2fc6ce975bbb83519f17eb073043720849b5cc
 testImports: []
