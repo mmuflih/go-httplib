@@ -11,11 +11,11 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-type httpfunc func(http.ResponseWriter, *http.Request)
+type httpFunc func(http.ResponseWriter, *http.Request)
 
 var jwtMiddleware *jwtMid.JWTMiddleware
 var signingKey []byte
-var myrole map[string][]string
+var myRole map[string][]string
 
 func InitJWTMiddleware(secret []byte) {
 	signingKey = secret
@@ -39,7 +39,7 @@ func InitJWTMiddlewareCustomSigningKey(secret []byte, signingMethod jwt.SigningM
 
 func InitJWTMiddlewareWithRole(secret []byte, signingMethod jwt.SigningMethod, role map[string][]string) {
 	signingKey = secret
-	myrole = role
+	myRole = role
 	jwtMiddleware = jwtMid.New(jwtMid.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return signingKey, nil
@@ -67,7 +67,7 @@ func ExtractClaim(r *http.Request, key string) (interface{}, error) {
 
 }
 
-func JWTMid(h httpfunc) httpfunc {
+func JWTMid(h httpFunc) httpFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := checkJWT(w, r, "")
 		if err != nil {
@@ -77,7 +77,7 @@ func JWTMid(h httpfunc) httpfunc {
 	}
 }
 
-func JWTMidWithRole(h httpfunc, role string) httpfunc {
+func JWTMidWithRole(h httpFunc, role string) httpFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := checkJWT(w, r, role)
 		if err != nil {
@@ -119,7 +119,6 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		ResponseException(w, ePassingToken, 401)
 		return ePassingToken
 	}
-	fmt.Println(parsedToken.Claims, "token")
 
 	if jwtMiddleware.Options.SigningMethod != nil && jwtMiddleware.Options.SigningMethod.Alg() != parsedToken.Header["alg"] {
 		errorMsg := fmt.Sprintf("Expected %s signing method but token specified %s",
@@ -144,8 +143,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		return nil
 	}
 	tokenRole, _ := ExtractClaim(r, "role")
-	fmt.Println(tokenRole, "role")
-	for k, r := range myrole {
+	for k, r := range myRole {
 		if k == role {
 			for _, c := range r {
 				if strings.ToLower(c) == strings.ToLower(tokenRole.(string)) {
