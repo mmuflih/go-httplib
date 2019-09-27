@@ -147,7 +147,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		}
 	}
 	e := errors.New("Access is not permitted")
-	writeLog.Write(e, "my-role", myRole, "role", role, "token-role", tokenRole, "token-uid", userID)
+	writeLog.Write(e, "my-role", myRole, "role", role, "token-role", tokenRole, "token-uid", userID, "token", token)
 	ResponseException(w, e, 401)
 	return e
 }
