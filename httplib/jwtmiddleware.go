@@ -135,6 +135,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		return nil
 	}
 	tokenRole, _ := ExtractClaim(r, "role")
+	userID, _ := ExtractClaim(r, "user_id")
 	for k, r := range myRole {
 		if k == role {
 			for _, c := range r {
@@ -146,7 +147,7 @@ func checkJWT(w http.ResponseWriter, r *http.Request, role string) error {
 		}
 	}
 	e := errors.New("Access is not permitted")
-	writeLog.Write(e, "my-role", myRole, "role", role, "token-role", tokenRole)
+	writeLog.Write(e, "my-role", myRole, "role", role, "token-role", tokenRole, "token-uid", userID)
 	ResponseException(w, e, 401)
 	return e
 }
