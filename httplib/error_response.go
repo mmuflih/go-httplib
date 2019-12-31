@@ -13,6 +13,9 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 type ErrorResponse struct {
@@ -24,6 +27,10 @@ type ErrorResponse struct {
 }
 
 func ResponseException(w http.ResponseWriter, err error, code int) {
+	/** sentry */
+	sentry.CaptureException(err)
+	sentry.Flush(time.Second * 5)
+
 	pc, fn, line, _ := runtime.Caller(1)
 	log.Printf("[error] %s:%d %v on %s", fn, line, err, pc)
 	exception := ErrorResponse{
