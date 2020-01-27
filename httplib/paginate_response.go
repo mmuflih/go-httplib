@@ -6,16 +6,29 @@ import (
 )
 
 type DataPaginate struct {
-	Data  interface{} 		`json:"data"`
-	Additional interface{}  `json:"additional,omitempty"`
-	Count int         		`json:"total"`
-	Page  int         		`json:"page"`
-	Size  int         		`json:"size"`
-	Code  int         		`json:"code"`
+	Data       interface{} `json:"data"`
+	Additional interface{} `json:"additional,omitempty"`
+	Count      int         `json:"total"`
+	Page       int         `json:"page"`
+	Size       int         `json:"size"`
+	Code       int         `json:"code"`
+}
+
+func NewDataPaginatePointer(data interface{}, count int, page int, size int) *DataPaginate {
+	dp := &DataPaginate{
+		data,
+		nil,
+		count,
+		page,
+		size,
+		http.StatusOK,
+	}
+	dp.Code = http.StatusOK
+	return dp
 }
 
 func NewDataPaginate(data interface{}, count int, page int, size int) DataPaginate {
-	dp := DataPaginate {
+	dp := DataPaginate{
 		data,
 		nil,
 		count,
@@ -28,7 +41,7 @@ func NewDataPaginate(data interface{}, count int, page int, size int) DataPagina
 }
 
 func NewNilDataPaginate() DataPaginate {
-	dp := DataPaginate {
+	dp := DataPaginate{
 		"",
 		nil,
 		0,
