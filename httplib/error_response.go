@@ -28,8 +28,7 @@ type ErrorResponse struct {
 
 func ResponseException(w http.ResponseWriter, err error, code int) {
 	/** sentry */
-	sentry.CaptureException(err)
-	sentry.Flush(time.Second * 5)
+	go sendSentry(err)
 
 	pc, fn, line, _ := runtime.Caller(1)
 	log.Printf("[error] %s:%d %v on %s", fn, line, err, pc)
@@ -47,4 +46,9 @@ func ResponseException(w http.ResponseWriter, err error, code int) {
 		exception,
 	)
 	return
+}
+
+func sendSentry(err error) {
+	sentry.CaptureException(err)
+	sentry.Flush(time.Second * 5)
 }
