@@ -49,6 +49,6 @@ func ResponseException(w http.ResponseWriter, err error, code int) {
 }
 
 func sendSentry(err error) {
+	defer sentry.Flush(time.Second * 2)
 	sentry.CaptureException(err)
-	sentry.Flush(time.Second * 5)
 }
