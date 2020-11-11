@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	datalog "github.com/mmuflih/go-text-log"
 	"net/http"
 	"strings"
+
+	datalog "github.com/mmuflih/go-text-log"
 
 	jwtMid "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -51,12 +52,18 @@ func ExtractClaim(r *http.Request, key string) (interface{}, error) {
 		return signingKey, nil
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
 		return claims[key], nil
-	} else {
-		return "", nil
 	}
 
+	if !ok {
+		return nil, errors.New("Token broken")
+	}
+	if !token.Valid {
+		return nil, errors.New("Token invalid")
+	}
+	return nil, nil
 }
 
 func JWTMid(h httpFunc) httpFunc {
