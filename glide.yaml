@@ -1,8 +1,0 @@
-package: github.com/mmuflih/go-httplib
-import:
-- package: github.com/auth0/go-jwt-middleware
-- package: github.com/dgrijalva/jwt-go
-  version: ^3.2.0
-- package: github.com/gorilla/mux
-  version: ^1.6.2
-- package: github.com/mmuflih/go-text-log
